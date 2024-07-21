@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crypto Financial Advisory</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Crypto Financial Advisory</h1>
+    <form action="/result" method="post">
+        <label for="coin_name">Coin Name:</label>
+        <input type="text" id="coin_name" name="coin_name" required><br>
+        <label for="buy_price">Price When Bought:</label>
+        <input type="number" step="0.01" id="buy_price" name="buy_price" required><br>
+        <label for="amount">Amount:</label>
+        <input type="number" step="0.01" id="amount" name="amount" required><br>
+        <button type="submit">Get Advice</button>
+    </form>
+</body>
+</html>

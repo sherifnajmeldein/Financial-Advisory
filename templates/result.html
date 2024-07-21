@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Investment Results</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Investment Results</h1>
+    <p>Coin Name: {{ user_data.coin_name }}</p>
+    <p>Price When Bought: {{ user_data.buy_price }}</p>
+    <p>Amount: {{ user_data.amount }}</p>
+    <p>Total Value When Bought: {{ user_data.total_value }}</p>
+    <p>Current Price: {{ user_data.current_price }}</p>
+    <p>Current Value: {{ user_data.current_value }}</p>
+    <p>Profit/Loss: {{ user_data.profit_loss }}</p>
+    <h2>Investment Advice</h2>
+    <p>{{ advice }}</p>
+    <a href="/">Back</a>
+</body>
+</html>

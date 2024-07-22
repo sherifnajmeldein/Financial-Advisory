@@ -8,4 +8,5 @@ class Env:
     def __call__(self, key):
         return os.getenv(key)
 
+# Load the environment variables
 env = Env()

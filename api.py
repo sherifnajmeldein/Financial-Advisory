@@ -1,26 +1,30 @@
+# api.py
 import requests
+from requests.exceptions import RequestException
 
 COINPAPRIKA_API_URL = 'https://api.coinpaprika.com/v1'
-COINPAPRIKA_SEARCH_URL = f'{COINPAPRIKA_API_URL}/coins'
+COINPAPRIKA_SEARCH_URL = f'{COINPAPRIKA_API_URL}/search'
 COINPAPRIKA_TICKER_URL = f'{COINPAPRIKA_API_URL}/tickers'
 
 def search_coin_by_name(coin_name):
     try:
         # Make a request to search for the coin by name
         params = {'q': coin_name}
-        response = requests.get(COINPAPRIKA_SEARCH_URL, params=params)
+        headers = {'Accept': 'application/json'}
+        
+        response = requests.get(COINPAPRIKA_SEARCH_URL, params=params, headers=headers)
         response.raise_for_status()  # Check if the request was successful
         
         data = response.json()
-        if data:
+        if 'currencies' in data and len(data['currencies']) > 0:
             # Assuming the first result is the most relevant
-            coin_id = data[0]['id']
+            coin_id = data['currencies'][0]['id']
             return coin_id
         else:
             print(f"Coin '{coin_name}' not found.")
             return None
 
-    except requests.RequestException as e:
+    except RequestException as e:
         print(f"Error searching for coin '{coin_name}': {e}")
         return None
 
@@ -34,7 +38,9 @@ def get_crypto_price(coin_name):
             url = f"{COINPAPRIKA_TICKER_URL}/{coin_id}"
 
             # Make the request to get the ticker information
-            response = requests.get(url)
+            headers = {'Accept': 'application/json'}
+            
+            response = requests.get(url, headers=headers)
             response.raise_for_status()  # Check if the request was successful
             
             data = response.json()
@@ -49,18 +55,6 @@ def get_crypto_price(coin_name):
             print(f"Failed to retrieve coin ID for '{coin_name}'.")
             return None
 
-    except requests.RequestException as e:
+    except RequestException as e:
         print(f"Error retrieving price for '{coin_name}': {e}")
         return None
-
-# Test the function with user input
-coin_name = input("Enter the name of the cryptocurrency: ").strip().lower()
-
-if coin_name:
-    price = get_crypto_price(coin_name)
-    if price is not None:
-        print(f"The price of {coin_name.capitalize()} is ${price}")
-    else:
-        print(f"Failed to retrieve the price for {coin_name.capitalize()}")
-else:
-    print("Please enter a valid name for the cryptocurrency.")

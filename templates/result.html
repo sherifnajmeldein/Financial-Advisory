@@ -1,20 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Investment Results</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css">
 </head>
 <body>
-    <h1>Investment Results</h1>
-    <p>Coin Name: {{ user_data.coin_name }}</p>
-    <p>Price When Bought: {{ user_data.buy_price }}</p>
-    <p>Amount: {{ user_data.amount }}</p>
-    <p>Total Value When Bought: {{ user_data.total_value }}</p>
-    <p>Current Price: {{ user_data.current_price }}</p>
-    <p>Current Value: {{ user_data.current_value }}</p>
-    <p>Profit/Loss: {{ user_data.profit_loss }}</p>
-    <h2>Investment Advice</h2>
-    <p>{{ advice }}</p>
-    <a href="/">Back</a>
+    <div class="container">
+        <h1>Investment Results</h1>
+        <p><strong>Cryptocurrency:</strong> {{ user_data.coin_name }}</p>
+        <p><strong>Buy Price (USD):</strong> ${{ user_data.buy_price }}</p>
+        <p><strong>Amount:</strong> {{ user_data.amount }}</p>
+        <p><strong>Current Price (USD):</strong> ${{ user_data.current_price }}</p>
+        <p><strong>{{ user_data.profit_loss.type | capitalize }}:</strong> ${{ user_data.profit_loss.amount }}</p>
+
+        <h2>Investment Advice</h2>
+        <p>{{ advice }}</p>
+
+        <a href="/">Back</a>
+    </div>
 </body>
 </html>

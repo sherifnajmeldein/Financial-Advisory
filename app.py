@@ -1,11 +1,8 @@
 from flask import Flask, render_template, request
-from dotenv import load_dotenv
-import os
-from api import get_crypto_price
-from env_loader import env
+from decimal import Decimal
+from crypto_price import get_crypto_price
+from geminiAPI import env
 import google.generativeai as genai
-
-load_dotenv()
 
 app = Flask(__name__)
 
@@ -61,14 +58,14 @@ def calculate_profit_loss(buy_price, current_price, amount):
 @app.route('/result', methods=['POST'])
 def result():
     coin_name = request.form['coin_name']
-    buy_price = float(request.form['buy_price'])
-    amount = float(request.form['amount'])
+    buy_price = Decimal(request.form['buy_price'])
+    amount = Decimal(request.form['amount'])
 
     current_price = get_crypto_price(coin_name)
     if current_price is None:
         return render_template('error.html', message="Unable to fetch the current price for the specified coin.")
     
-    profit_loss = calculate_profit_loss(buy_price, current_price, amount)
+    profit_loss = calculate_profit_loss(buy_price, Decimal(current_price), amount)
 
     user_data = {
         'coin_name': coin_name,

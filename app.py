@@ -1,10 +1,36 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from decimal import Decimal
 from crypto_price import get_crypto_price
-from geminiAPI import env
+from gemini_integration.geminiAPI import env
 import google.generativeai as genai
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+
+# Set up the SQLAlchemy part
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///investment_history.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Define the Investment model
+class Investment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    coin_name = db.Column(db.String(50), nullable=False)
+    buy_price = db.Column(db.Numeric, nullable=False)
+    amount = db.Column(db.Numeric, nullable=False)
+    current_price = db.Column(db.Numeric, nullable=False)
+    profit_loss = db.Column(db.String(50), nullable=False)
+    advice = db.Column(db.Text, nullable=True)
+
+# Flag to check if tables are created
+tables_created = False
+
+@app.before_request
+def create_tables():
+    global tables_created
+    if not tables_created:
+        db.create_all()
+        tables_created = True
 
 @app.route('/')
 def home():
@@ -55,15 +81,15 @@ def calculate_profit_loss(buy_price, current_price, amount):
     else:
         return {'type': 'loss', 'amount': abs(profit_loss)}
 
-@app.route('/result', methods=['POST'])
-def result():
+@app.route('/advice', methods=['POST'])
+def advice():
     coin_name = request.form['coin_name']
     buy_price = Decimal(request.form['buy_price'])
     amount = Decimal(request.form['amount'])
 
     current_price = get_crypto_price(coin_name)
     if current_price is None:
-        return render_template('error.html', message="Unable to fetch the current price for the specified coin.")
+        return jsonify({'error': "Unable to fetch the current price for the specified coin."}), 400
     
     profit_loss = calculate_profit_loss(buy_price, Decimal(current_price), amount)
 
@@ -76,7 +102,84 @@ def result():
     }
 
     advice = get_investment_advice(user_data)
-    return render_template('result.html', user_data=user_data, advice=advice)
+
+    return jsonify({'user_data': user_data, 'advice': advice})
+
+@app.route('/investments', methods=['POST'])
+def add_investment():
+    coin_name = request.form['coin_name']
+    buy_price = Decimal(request.form['buy_price'])
+    amount = Decimal(request.form['amount'])
+
+    current_price = get_crypto_price(coin_name)
+    if current_price is None:
+        return jsonify({'error': "Unable to fetch the current price for the specified coin."}), 400
+    
+    profit_loss = calculate_profit_loss(buy_price, Decimal(current_price), amount)
+
+    # Save investment to the database
+    investment = Investment(
+        coin_name=coin_name,
+        buy_price=buy_price,
+        amount=amount,
+        current_price=Decimal(current_price),
+        profit_loss=f"{profit_loss['type']} of {profit_loss['amount']}",
+    )
+    db.session.add(investment)
+    db.session.commit()
+
+    return jsonify({'message': 'Investment added successfully'})
+
+@app.route('/investments', methods=['GET'])
+def get_investments():
+    investments = Investment.query.all()
+    investment_list = []
+
+    for inv in investments:
+        current_price = get_crypto_price(inv.coin_name)
+        if current_price is None:
+            return jsonify({'error': "Unable to fetch the current price for the specified coin."}), 400
+
+        investment_list.append({
+            'id': inv.id,
+            'coin_name': inv.coin_name,
+            'buy_price': str(inv.buy_price),
+            'amount': str(inv.amount),
+            'current_price': current_price,
+            'profit_loss': inv.profit_loss,
+        })
+
+    return jsonify(investment_list)
+
+@app.route('/investments/<int:id>', methods=['PUT'])
+def update_investment(id):
+    investment = Investment.query.get_or_404(id)
+    coin_name = request.form['coin_name']
+    buy_price = Decimal(request.form['buy_price'])
+    amount = Decimal(request.form['amount'])
+
+    current_price = get_crypto_price(coin_name)
+    if current_price is None:
+        return jsonify({'error': "Unable to fetch the current price for the specified coin."}), 400
+    
+    profit_loss = calculate_profit_loss(buy_price, Decimal(current_price), amount)
+
+    investment.coin_name = coin_name
+    investment.buy_price = buy_price
+    investment.amount = amount
+    investment.current_price = Decimal(current_price)
+    investment.profit_loss = f"{profit_loss['type']} of {profit_loss['amount']}"
+
+    db.session.commit()
+
+    return jsonify({'message': 'Investment updated successfully'})
+
+@app.route('/investments/<int:id>', methods=['DELETE'])
+def delete_investment(id):
+    investment = Investment.query.get_or_404(id)
+    db.session.delete(investment)
+    db.session.commit()
+    return jsonify({'message': 'Investment deleted successfully'})
 
 if __name__ == '__main__':
     app.run(debug=True)

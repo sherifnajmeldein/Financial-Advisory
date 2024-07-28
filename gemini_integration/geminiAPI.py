@@ -1,4 +1,4 @@
-from env_loader import env
+from gemini_integration.env_loader import env
 import google.generativeai as genai
 
 API_KEY = env('API_KEY')

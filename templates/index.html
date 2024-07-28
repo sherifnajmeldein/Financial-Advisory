@@ -1,25 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Crypto Investment Advisor</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css">
+    <title>Investment Management</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Crypto Investment Advisor</h1>
-        <form action="/result" method="post">
-            <label for="coin_name">Cryptocurrency Name:</label>
-            <input type="text" id="coin_name" name="coin_name" required>
+    <h1>Investment Management</h1>
 
-            <label for="buy_price">Buy Price (USD):</label>
-            <input type="number" id="buy_price" name="buy_price" step="0.00000001" required>
+    <h2>Add Investment</h2>
+    <form id="addInvestmentForm">
+        <label for="coin_name">Coin Name:</label>
+        <input type="text" id="coin_name" name="coin_name" required><br><br>
+        <label for="buy_price">Buy Price:</label>
+        <input type="number" step="0.01" id="buy_price" name="buy_price" required><br><br>
+        <label for="amount">Amount:</label>
+        <input type="number" step="0.01" id="amount" name="amount" required><br><br>
+        <button type="submit">Add Investment</button>
+    </form>
 
-            <label for="amount">Amount:</label>
-            <input type="number" id="amount" name="amount" step="0.00000001" required>
+    <h2>Update Investment</h2>
+    <form id="updateInvestmentForm">
+        <label for="update_id">Investment ID:</label>
+        <input type="number" id="update_id" name="id" required><br><br>
+        <label for="update_coin_name">Coin Name:</label>
+        <input type="text" id="update_coin_name" name="coin_name"><br><br>
+        <label for="update_buy_price">Buy Price:</label>
+        <input type="number" step="0.01" id="update_buy_price" name="buy_price"><br><br>
+        <label for="update_amount">Amount:</label>
+        <input type="number" step="0.01" id="update_amount" name="amount"><br><br>
+        <button type="submit">Update Investment</button>
+    </form>
 
-            <button type="submit">Get Advice</button>
-        </form>
-    </div>
+    <h2>Delete Investment</h2>
+    <form id="deleteInvestmentForm">
+        <label for="delete_id">Investment ID:</label>
+        <input type="number" id="delete_id" name="id" required><br><br>
+        <button type="submit">Delete Investment</button>
+    </form>
+
+    <h2>Get Investments</h2>
+    <button id="getInvestmentsButton">Get All Investments</button>
+    <ul id="investmentList"></ul>
+
+    <script>
+        $(document).ready(function() {
+            // Add Investment
+            $('#addInvestmentForm').submit(function(event) {
+                event.preventDefault();
+                const data = {
+                    coin_name: $('#coin_name').val(),
+                    buy_price: $('#buy_price').val(),
+                    amount: $('#amount').val()
+                };
+                $.post('/investments', data, function(response) {
+                    alert(response.message);
+                }).fail(function(response) {
+                    alert(response.responseJSON.error);
+                });
+            });
+
+            // Update Investment
+            $('#updateInvestmentForm').submit(function(event) {
+                event.preventDefault();
+                const id = $('#update_id').val();
+                const data = {
+                    coin_name: $('#update_coin_name').val(),
+                    buy_price: $('#update_buy_price').val(),
+                    amount: $('#update_amount').val()
+                };
+                $.ajax({
+                    url: `/investments/${id}`,
+                    type: 'PUT',
+                    data: data,
+                    success: function(response) {
+                        alert(response.message);
+                    },
+                    error: function(response) {
+                        alert(response.responseJSON.error);
+                    }
+                });
+            });
+
+            // Delete Investment
+            $('#deleteInvestmentForm').submit(function(event) {
+                event.preventDefault();
+                const id = $('#delete_id').val();
+                $.ajax({
+                    url: `/investments/${id}`,
+                    type: 'DELETE',
+                    success: function(response) {
+                        alert(response.message);
+                    },
+                    error: function(response) {
+                        alert(response.responseJSON.error);
+                    }
+                });
+            });
+
+            // Get Investments
+            $('#getInvestmentsButton').click(function() {
+                $.get('/investments', function(response) {
+                    $('#investmentList').empty();
+                    response.forEach(function(investment) {
+                        $('#investmentList').append(`<li>${investment.coin_name} - ${investment.buy_price} - ${investment.amount} - ${investment.current_price} - ${investment.profit_loss}</li>`);
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>

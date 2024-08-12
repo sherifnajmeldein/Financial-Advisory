@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Operations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Crypto Investment Tracker</h1>
+  
+    <!-- Get Advice Form -->
+    <div class="container">
+        <h2>Get Advice</h2>
+        <form id="get-advice-form">
+            <label for="advice_coin_name">Coin Name:</label>
+            <input type="text" id="advice_coin_name" name="advice_coin_name" required>
+            <label for="advice_buy_price">Buy Price:</label>
+            <input type="number" step="0.01" id="advice_buy_price" name="advice_buy_price" required>
+            <label for="advice_amount">Amount:</label>
+            <input type="number" step="0.01" id="advice_amount" name="advice_amount" required>
+            <button type="submit">Get Advice</button>
+        </form>
+        <div id="advice-result">
+            <h3>User Data</h3>
+            <p><strong>Coin Name:</strong> <span id="user-coin-name"></span></p>
+            <p><strong>Buy Price:</strong> <span id="user-buy-price"></span></p>
+            <p><strong>Amount:</strong> <span id="user-amount"></span></p>
+            <p><strong>Current Price:</strong> <span id="user-current-price"></span></p>
+            <p><strong>Profit/Loss:</strong> <span id="user-profit-loss"></span></p>
+            <h3>Advice</h3>
+            <p id="advice-text" style="white-space: pre-wrap;"></p>  <!-- This will preserve line breaks -->
+        </div>        
+    </div>
+
+    <!-- Add Investment Form -->
+    <div class="container">
+        <h2>Add Investment</h2>
+        <form id="add-investment-form">
+            <label for="coin_name">Coin Name:</label>
+            <input type="text" id="coin_name" name="coin_name" required>
+            <label for="buy_price">Buy Price:</label>
+            <input type="number" step="0.01" id="buy_price" name="buy_price" required>
+            <label for="amount">Amount:</label>
+            <input type="number" step="0.01" id="amount" name="amount" required>
+            <button type="submit">Add Investment</button>
+        </form>
+        <div id="add-investment-result"></div>
+    </div>
+
+    <!-- View and Manage Investments -->
+    <div class="container">
+        <h2>View and Manage Investments</h2>
+        <button id="view-investments">View Investments</button>
+        <div id="investments-list"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>

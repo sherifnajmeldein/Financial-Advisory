@@ -1,0 +1,246 @@
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at center, #0bbd96 0%, #1d0d2c60 70%);
+    color: #ecf0f1;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1, h2 {
+    color: #ecf0f1;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    font-size: 3.5em;
+    text-align: center;
+    margin-top: 40px;
+    animation: fadeInDown 1.5s ease-in-out;
+}
+
+h2 {
+    font-size: 2.2em;
+    margin-bottom: 20px;
+}
+
+/* Container for forms */
+.container {
+    width: 70%;
+    margin: 50px auto;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    padding: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ecf1ec;
+    position: relative;
+    overflow: hidden;
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: rotateGradient 10s infinite linear;
+    z-index: 0;
+}
+
+.container > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Form Styles */
+form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 25px;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    color: #ecf0f1;
+    box-sizing: border-box;
+    font-size: 1.1em;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+    outline: none;
+}
+
+button {
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 255, 255, 0.7);
+}
+
+/* Advice and Investment Display */
+#advice-result, #investments-list {
+    margin-top: 30px;
+}
+
+#advice-result h3, #investments-list h3 {
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    color: #ecf0f1;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+#advice-result p, #investments-list p {
+    font-size: 1.2em;
+    padding: 10px 0;
+}
+
+/* View and Manage Investments */
+#investments-list {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+#investments-list::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: rotateGradient 15s infinite linear;
+    z-index: 0;
+}
+
+#investments-list > * {
+    position: relative;
+    z-index: 1;
+}
+
+#investments-list table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: #ecf0f1;
+}
+
+#investments-list table, th, td {
+    border: none;
+}
+
+th, td {
+    padding: 20px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+th {
+    background: rgba(0, 123, 255, 0.8);
+    color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    text-transform: uppercase;
+}
+
+tr {
+    background: rgba(255, 255, 255, 0.05);
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+tr:hover {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes rotateGradient {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    form {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2.5em;
+    }
+
+    h2 {
+        font-size: 1.8em;
+    }
+
+    th, td {
+        padding: 15px;
+    }
+}

@@ -36,8 +36,12 @@ def create_tables():
 def home():
     return render_template('index.html')
 
+@app.route('/main')
+def main():
+    return render_template('main.html')
+
 def get_investment_advice(user_data):
-    API_KEY = env('API_KEY')  # Access the key from the environment
+    API_KEY = env('API_KEY')
     if not API_KEY:
         return "API key not found. Please set the API_KEY environment variable."
     
@@ -67,11 +71,45 @@ def get_investment_advice(user_data):
     
     response = chat_session.send_message(user_message)
     
+    raw_advice = response.text if response and response.text else "No advice returned"
+    print("Raw advice:", raw_advice)  # Log the raw response for debugging
+    
     if response and response.text:
-        advice = response.text.strip()
+        advice = clean_advice_text(response.text)
     else:
         advice = "Could not generate investment advice at this time."
 
+    return advice
+
+import re
+
+def clean_advice_text(advice):
+    # Remove stars and extra line breaks
+    advice = advice.replace('*', '')
+    ##advice = advice.replace('\n\n\n', '\n')  # Handle multiple newlines
+
+    # Replace numbered lists with bullet points
+    advice = re.sub(r'^\d+\.\s+', '• ', advice, flags=re.MULTILINE)
+    
+    # Optionally, replace multiple spaces with a single space
+    advice = ' '.join(advice.split())
+    
+    return advice.strip()
+
+
+
+def clean_advice_text(advice):
+    # Remove stars and multiple newlines
+    advice = advice.replace('*', '')
+    advice = advice.replace('\n\n', '\n')  # Remove extra line breaks
+    advice = advice.replace('\n\n\n', '\n')  # Handle multiple newlines
+
+    # Additional cleanup if needed
+    advice = advice.strip()
+    
+    # Optionally replace multiple spaces with a single space
+    advice = ' '.join(advice.split())
+    
     return advice
 
 def calculate_profit_loss(buy_price, current_price, amount):
@@ -83,9 +121,10 @@ def calculate_profit_loss(buy_price, current_price, amount):
 
 @app.route('/advice', methods=['POST'])
 def advice():
-    coin_name = request.form['coin_name']
-    buy_price = Decimal(request.form['buy_price'])
-    amount = Decimal(request.form['amount'])
+    data = request.get_json()
+    coin_name = data['coin_name']
+    buy_price = Decimal(data['buy_price'])
+    amount = Decimal(data['amount'])
 
     current_price = get_crypto_price(coin_name)
     if current_price is None:
@@ -107,9 +146,10 @@ def advice():
 
 @app.route('/investments', methods=['POST'])
 def add_investment():
-    coin_name = request.form['coin_name']
-    buy_price = Decimal(request.form['buy_price'])
-    amount = Decimal(request.form['amount'])
+    data = request.get_json()
+    coin_name = data['coin_name']
+    buy_price = Decimal(data['buy_price'])
+    amount = Decimal(data['amount'])
 
     current_price = get_crypto_price(coin_name)
     if current_price is None:
@@ -117,7 +157,6 @@ def add_investment():
     
     profit_loss = calculate_profit_loss(buy_price, Decimal(current_price), amount)
 
-    # Save investment to the database
     investment = Investment(
         coin_name=coin_name,
         buy_price=buy_price,
@@ -154,9 +193,10 @@ def get_investments():
 @app.route('/investments/<int:id>', methods=['PUT'])
 def update_investment(id):
     investment = Investment.query.get_or_404(id)
-    coin_name = request.form['coin_name']
-    buy_price = Decimal(request.form['buy_price'])
-    amount = Decimal(request.form['amount'])
+    data = request.get_json()
+    coin_name = data['coin_name']
+    buy_price = Decimal(data['buy_price'])
+    amount = Decimal(data['amount'])
 
     current_price = get_crypto_price(coin_name)
     if current_price is None:
